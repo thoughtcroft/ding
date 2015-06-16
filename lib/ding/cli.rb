@@ -23,7 +23,7 @@ module Ding
       repo.tap do |r|
         r.delete_branch(Ding::TESTING_BRANCH, options[:force])
         r.checkout(branch)
-        r.create(Ding::TESTING_BRANCH)
+        r.create_branch(Ding::TESTING_BRANCH)
         r.push(Ding::TESTING_BRANCH)
       end
 
