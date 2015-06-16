@@ -39,7 +39,7 @@ module Ding
       question   = set_color "\nWhich branch should I use?", :yellow
       answers    = {}
 
-      branches.sort.each_with_index do |branch, index|
+      branches.each_with_index do |branch, index|
         i = (index + 1).to_s
         answers[i] = branch
         question << format(str_format, i, branch)
