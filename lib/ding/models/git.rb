@@ -2,7 +2,7 @@ module Ding
   class Git
 
     def initialize
-      raise "Not a git repository: #{repo}" unless git_repo?
+      raise "#{repo} is NOT a git repository" unless git_repo?
     end
 
     def branches(pattern)
@@ -19,7 +19,7 @@ module Ding
 
     def delete_branch(branch)
       return unless branch_exists? branch
-      raise "You are not allowed to delete #{branch} branch!" if [ 'master', 'develop' ].include?(branch)
+      raise "You are not allowed to delete #{branch} branch!" if Ding::SACROSANCT_BRANCHES.include?(branch)
       raise "Unable to delete local #{branch} branch!" unless system "git", "branch", "-d", branch
       raise "Unable to delete remote #{branch} branch!" unless system "git", "push", "origin", ":#{branch}"
     end
@@ -30,7 +30,7 @@ module Ding
     end
 
     def update
-      raise "Error synchronising with remote" unless system "git", "up"
+      raise "Error synchronising with the remote" unless system "git", "up"
     end
 
     private
@@ -46,6 +46,5 @@ module Ding
     def repo
       @repo || Dir.pwd
     end
-
   end
 end
