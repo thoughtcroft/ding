@@ -12,7 +12,13 @@ module Ding
         r.update
       end
 
-      branch = ask_which_branch_to_test(repo.branches(options[:pattern]))
+      branches = repo.branches(options[:pattern])
+      if branches.empty?
+        say "No feature branches available to test, I'm out of here!", :red
+        exit 1
+      end
+
+      branch = ask_which_branch_to_test(branches)
       repo.tap do |r|
         r.checkout(branch)
         r.create(Ding::TESTING_BRANCH)
