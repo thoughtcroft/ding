@@ -3,7 +3,7 @@
 ![Ding](./ding.png)
 
 Simple command line tool for deploying a specific feature branch of a
-repo to a testing branch for driving CI deployment for QA purposes.
+repo to a testing branch for driving CI deployment for QA.
 
 ## Installation
 
@@ -33,7 +33,7 @@ Then run Bundler to install the gem:
 By default, `ding` will create a branch called `testing` from the
 selected feature branch. It also assumes that the master branch is
 called `master`. Branches named `master` and `develop` cannot be deleted
-by calling the Ding::Cli methods.
+by calling Ding::Git.delete_branch in code.
 
 These defaults can be over-ridden by providing ENV vars to the shell:
 
