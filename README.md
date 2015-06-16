@@ -1,5 +1,7 @@
 # Ding
 
+![Ding](./ding.png)
+
 Simple command line tool for deploying a specific feature branch of a
 repo to a testing branch for driving CI deployment for QA purposes.
 
