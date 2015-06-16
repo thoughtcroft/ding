@@ -22,7 +22,7 @@ Then run Bundler to install the gem:
 
 ### Clone this repo and install
 
-    git clone https://thoughtcroft@bitbucket.org/arisapp/ding.git
-    cd ding
-    bundle exec rake install
+    $ git clone https://thoughtcroft@bitbucket.org/arisapp/ding.git
+    $ cd ding
+    $ bundle exec rake install
 
