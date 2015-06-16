@@ -12,7 +12,7 @@ module Ding
         r.update
       end
 
-      branch = ask_which_branch_to_test(repo.branches(option[:pattern]))
+      branch = ask_which_branch_to_test(repo.branches(options[:pattern]))
       repo.tap do |r|
         r.checkout(branch)
         r.create(Ding::TESTING_BRANCH)
