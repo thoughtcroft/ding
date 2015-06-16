@@ -45,7 +45,7 @@ module Ding
         question << format(str_format, i, branch)
       end
 
-      puts question
+      say question
       reply = ask("> ").to_s
       if answers[reply]
         answers[reply]
@@ -54,6 +54,5 @@ module Ding
         exit 1
       end
     end
-
   end
 end

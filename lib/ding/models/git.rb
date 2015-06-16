@@ -9,6 +9,10 @@ module Ding
       %x(git branch --remote --list origin/#{pattern}).split.map {|b| b.split('/').last}
     end
 
+    def branch_exists?(branch)
+      ! %x(git branch --list #{branch}).empty?
+    end
+
     def checkout(branch)
       raise "Unable to checkout #{branch}" unless system "git", "checkout", branch
     end
@@ -34,10 +38,6 @@ module Ding
     end
 
     private
-
-    def branch_exists?(branch)
-      ! %x(git branch --list #{branch}).empty?
-    end
 
     def git_repo?
       system "git", "status"
