@@ -30,7 +30,7 @@ module Ding
     end
 
     def update
-      raise "Unknown error synchronising with remote" unless system "git", "up"
+      raise "Error synchronising with remote" unless system "git", "up"
     end
 
     private
