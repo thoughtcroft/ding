@@ -3,29 +3,30 @@ require 'thor'
 module Ding
   class Cli < Thor
 
-    desc "test", "Deploy a feature branch to the testing branch"
+    desc "test", "Push a feature branch to the testing branch"
     option :pattern, type: 'string', aliases: '-p', default: 'XAP*', desc: 'specify a pattern for listing branches'
     def test
       repo = Ding::Git.new.tap do |r|
         r.checkout Ding::MASTER_BRANCH
-        r.delete_branch(Ding::TESTING_BRANCH)
         r.update
       end
 
       branches = repo.branches(options[:pattern])
       if branches.empty?
-        say "No feature branches available to test, I'm out of here!", :red
+        say "\nNo feature branches available to test, I'm out of here!", :red
         exit 1
       end
 
       branch = ask_which_branch_to_test(branches)
+
       repo.tap do |r|
+        r.delete_branch(Ding::TESTING_BRANCH)
         r.checkout(branch)
         r.create(Ding::TESTING_BRANCH)
         r.push(Ding::TESTING_BRANCH)
       end
 
-      say "\n\n ---> Finished!\n\n", :green
+      say "\n ---> Finished!\n\n", :green
     end
 
     default_task :test
@@ -49,7 +50,7 @@ module Ding
       if answers[reply]
         answers[reply]
       else
-        say "Not a valid selection, I'm out of here!", :red
+        say "\nNot a valid selection, I'm out of here!", :red
         exit 1
       end
     end
