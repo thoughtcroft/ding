@@ -18,6 +18,7 @@ module Ding
     end
 
     def delete_branch(branch)
+      return unless branch_exists? branch
       raise "You are not allowed to delete #{branch} branch!" if [ 'master', 'develop' ].include?(branch)
       raise "Unable to delete local #{branch} branch!" unless system "git", "branch", "-d", branch
       raise "Unable to delete remote #{branch} branch!" unless system "git", "push", "origin", ":#{branch}"
@@ -33,6 +34,10 @@ module Ding
     end
 
     private
+
+    def branch_exists?(branch)
+      ! %x(git branch --list #{branch}).empty?
+    end
 
     def git_repo?
       system "git", "status"
