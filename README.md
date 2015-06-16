@@ -57,5 +57,7 @@ selection of the code to be pushed to `testing`.
     Options:
       -p, [--pattern=PATTERN]  # specify a pattern for listing branches
                                # Default: XAP*
+      -f, [--force]            # force testing branch deletion using -D
+                               # Default: true
 
     Push a feature branch to the testing branch

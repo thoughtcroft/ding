@@ -14,33 +14,33 @@ module Ding
     end
 
     def checkout(branch)
-      raise "Unable to checkout #{branch}" unless system "git", "checkout", branch
+      raise "Unable to checkout #{branch}" unless system "git checkout #{branch}"
     end
 
     def create_branch(branch)
-      raise "Unable to create #{branch}" unless system "git", "branch", "--track", branch
+      raise "Unable to create #{branch}" unless system "git branch --track #{branch}"
     end
 
-    def delete_branch(branch)
+    def delete_branch(branch, force=false)
       return unless branch_exists? branch
       raise "You are not allowed to delete #{branch} branch!" if Ding::SACROSANCT_BRANCHES.include?(branch)
-      raise "Unable to delete local #{branch} branch!" unless system "git", "branch", "-d", branch
-      raise "Unable to delete remote #{branch} branch!" unless system "git", "push", "origin", ":#{branch}"
+      raise "Unable to delete local #{branch} branch!" unless system "git branch #{force ? '-D' : '-d'} #{branch}"
+      raise "Unable to delete remote #{branch} branch!" unless system "git push origin :#{branch}"
     end
 
     def push(branch)
       checkout branch
-      raise "Unable to push #{branch} branch!" unless system "git", "push", "origin", branch
+      raise "Unable to push #{branch} branch!" unless system "git push origin #{branch}"
     end
 
     def update
-      raise "Error synchronising with the remote" unless system "git", "up"
+      raise "Error synchronising with the remote" unless system "git up"
     end
 
     private
 
     def git_repo?
-      system "git", "status"
+      system "git status"
     end
 
     def repo

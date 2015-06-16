@@ -4,7 +4,8 @@ module Ding
   class Cli < Thor
 
     desc "test", "Push a feature branch to the testing branch"
-    option :pattern, type: 'string', aliases: '-p', default: 'XAP*', desc: 'specify a pattern for listing branches'
+    option :pattern, type: 'string',  aliases: '-p', default: 'XAP*', desc: 'specify a pattern for listing branches'
+    option :force,   type: 'boolean', aliases: '-f', default: true,   desc: 'force testing branch deletion using -D'
     def test
       repo = Ding::Git.new.tap do |r|
         r.checkout Ding::MASTER_BRANCH
@@ -20,7 +21,7 @@ module Ding
       branch = ask_which_branch_to_test(branches)
 
       repo.tap do |r|
-        r.delete_branch(Ding::TESTING_BRANCH)
+        r.delete_branch(Ding::TESTING_BRANCH, options[:force])
         r.checkout(branch)
         r.create(Ding::TESTING_BRANCH)
         r.push(Ding::TESTING_BRANCH)
