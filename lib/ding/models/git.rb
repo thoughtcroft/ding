@@ -6,7 +6,7 @@ module Ding
     end
 
     def branches(pattern)
-      %x(git branch --remote --list #{pattern}).split.map {|b| b.split('/').last}
+      %x(git branch --remote --list origin/#{pattern}).split.map {|b| b.split('/').last}
     end
 
     def checkout(branch)
