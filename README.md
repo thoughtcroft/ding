@@ -26,3 +26,34 @@ Then run Bundler to install the gem:
     $ cd ding
     $ bundle exec rake install
 
+## Configuration
+
+By default, `ding` will create a branch called `testing` from the
+selected feature branch. It also assumes that the master branch is
+called `master`. Branches named `master` and `develop` cannot be deleted
+by calling the Ding::Cli methods.
+
+These defaults can be over-ridden by providing ENV vars to the shell:
+
+    DING_MASTER_BRANCH       - main branch to switch to for synchronising
+    DING_TESTING_BRANCH      - branch to over-ride from feature branch
+    DING_SACROSANCT_BRANCHES - space separated list of protected branches
+
+## Using Ding
+
+There is currently only one command available: `test` which is the
+default so it does not need to be used unless the following option is required.
+
+There is an option to specify the feature branch pattern to display for
+selection of the code to be pushed to `testing`.
+
+    $ ding help test
+
+    Usage:
+      ding test
+
+    Options:
+      -p, [--pattern=PATTERN]  # specify a pattern for listing branches
+                               # Default: XAP*
+
+    Push a feature branch to the testing branch
