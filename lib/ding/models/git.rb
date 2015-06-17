@@ -1,8 +1,6 @@
 module Ding
   class Git
 
-    attr_accessor :options
-
     def initialize(options={})
       raise "#{repo} is NOT a git repository" unless git_repo?
       @options = options
@@ -63,7 +61,7 @@ module Ding
       if is_remote?(branch)
         branch
       else
-        branch.prepend remote_prefix
+        "#{remote_prefix}#{branch}"
       end
     end
 
@@ -92,6 +90,10 @@ module Ding
     def run_cmd(cmd)
       cmd << ' &>/dev/null ' unless options[:verbose]
       system cmd
+    end
+
+    def options
+      @options || {}
     end
   end
 end

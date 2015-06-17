@@ -8,38 +8,40 @@ module Ding
     option :pattern, type: 'string',  aliases: '-p', default: 'origin/XAP*', desc: 'specify a pattern for listing branches'
     option :verbose, type: 'boolean', aliases: '-v', default: false,         desc: 'display stdout on git commands, callstack on errors'
     def test
-      say "\nDing ding ding: push a feature branch to #{Ding::TESTING_BRANCH}...", :green
+      master_branch, testing_branch = Ding::MASTER_BRANCH.dup, Ding::TESTING_BRANCH.dup
+      say "\nDing ding ding: let's push a feature branch to #{testing_branch}...", :green
 
       repo = Ding::Git.new(options).tap do |r|
-        say " > Synchronise with the remote...", :green
-        r.checkout Ding::MASTER_BRANCH
+        say "\n> Synchronising with the remote...", :green
+        r.checkout master_branch
         r.update
       end
 
-      branches = repo.branches
+      branches = repo.branches(options[:pattern])
       if branches.empty?
-        say "\n --> No feature branches available to test, I'm out of here!", :red
+        say "\n --> No feature branches available to test, I'm out of here!\n\n", :red
         exit 1
       end
 
-      branch = ask_which_branch_to_test(branches)
+      feature_branch = ask_which_branch_to_test(branches)
 
       repo.tap do |r|
-        say " > Delete #{Ding::TESTING_BRANCH}...", :green
-        r.delete_branch(Ding::TESTING_BRANCH)
-        say " > Checkout feature #{branch}...", :green
-        r.checkout(branch)
-        say " > Create #{Ding::TESTING_BRANCH}...", :green
-        r.create_branch(Ding::TESTING_BRANCH)
-        say " > Push #{Ding::TESTING_BRANCH} to the remote...", :green
-        r.push(Ding::TESTING_BRANCH)
+        say "\n> Deleting #{testing_branch}...", :green
+        r.delete_branch(testing_branch)
+        say "> Checking out #{feature_branch}...", :green
+        r.checkout(feature_branch)
+        say "> Creating #{testing_branch}...", :green
+        r.create_branch(testing_branch)
+        say "> Pushing #{testing_branch} to the remote...", :green
+        r.push(testing_branch)
       end
 
     rescue => e
-      say "\n --> Error: #{e.message}\n\n", :red
+      say "\n  --> Error: #{e.message}\n\n", :red
       raise if options[:verbose]
+      exit 1
     else
-      say "\n --> Finished!\n\n", :green
+      say "\n  --> I'm finished: ding ding ding!\n\n", :green
     end
 
     default_task :test
@@ -49,7 +51,7 @@ module Ding
     def ask_which_branch_to_test(branches)
       return branches.first if branches.size == 1
       str_format = "\n %#{branches.count.to_s.size}s: %s"
-      question   = set_color "\nWhich branch should I use?", :yellow
+      question   = set_color "\nWhich feature branch should I use?", :yellow
       answers    = {}
 
       branches.each_with_index do |branch, index|
@@ -63,7 +65,7 @@ module Ding
       if answers[reply]
         answers[reply]
       else
-        say "\nNot a valid selection, I'm out of here!", :red
+        say "\n  --> That's not a valid selection, I'm out of here!\n\n", :red
         exit 1
       end
     end
