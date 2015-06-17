@@ -4,30 +4,42 @@ module Ding
   class Cli < Thor
 
     desc "test", "Push a feature branch to the testing branch"
-    option :pattern, type: 'string',  aliases: '-p', default: 'XAP*', desc: 'specify a pattern for listing branches'
-    option :force,   type: 'boolean', aliases: '-f', default: true,   desc: 'force testing branch deletion using -D'
+    option :force,   type: 'boolean', aliases: '-f', default: true,          desc: 'force testing branch deletion using -D'
+    option :pattern, type: 'string',  aliases: '-p', default: 'origin/XAP*', desc: 'specify a pattern for listing branches'
+    option :verbose, type: 'boolean', aliases: '-v', default: false,         desc: 'display stdout on git commands, callstack on errors'
     def test
-      repo = Ding::Git.new.tap do |r|
+      say "\nDing ding ding: push a feature branch to #{Ding::TESTING_BRANCH}...", :green
+
+      repo = Ding::Git.new(options).tap do |r|
+        say " > Synchronise with the remote...", :green
         r.checkout Ding::MASTER_BRANCH
         r.update
       end
 
-      branches = repo.branches(options[:pattern])
+      branches = repo.branches
       if branches.empty?
-        say "\nNo feature branches available to test, I'm out of here!", :red
+        say "\n --> No feature branches available to test, I'm out of here!", :red
         exit 1
       end
 
       branch = ask_which_branch_to_test(branches)
 
       repo.tap do |r|
-        r.delete_branch(Ding::TESTING_BRANCH, options[:force])
+        say " > Delete #{Ding::TESTING_BRANCH}...", :green
+        r.delete_branch(Ding::TESTING_BRANCH)
+        say " > Checkout feature #{branch}...", :green
         r.checkout(branch)
+        say " > Create #{Ding::TESTING_BRANCH}...", :green
         r.create_branch(Ding::TESTING_BRANCH)
+        say " > Push #{Ding::TESTING_BRANCH} to the remote...", :green
         r.push(Ding::TESTING_BRANCH)
       end
 
-      say "\n ---> Finished!\n\n", :green
+    rescue => e
+      say "\n --> Error: #{e.message}\n\n", :red
+      raise if options[:verbose]
+    else
+      say "\n --> Finished!\n\n", :green
     end
 
     default_task :test
