@@ -33,7 +33,7 @@ Then run Bundler to install the gem:
 By default, `ding` will create a branch called `testing` from the
 selected feature branch. It also assumes that the master branch is
 called `master`. Branches named `master` and `develop` cannot be deleted
-by calling Ding::Git.delete_branch in code.
+by calling `Ding::Git.delete_branch` in code.
 
 These defaults can be over-ridden by providing ENV vars to the shell:
 
@@ -55,9 +55,11 @@ selection of the code to be pushed to `testing`.
       ding test
 
     Options:
-      -p, [--pattern=PATTERN]  # specify a pattern for listing branches
-                               # Default: XAP*
-      -f, [--force]            # force testing branch deletion using -D
-                               # Default: true
+      -f, [--force]                    # force testing branch deletion using -D
+                                       # Default: true
+      -p, [--pattern=PATTERN]          # specify a pattern for listing branches
+                                       # Default: origin/XAP*
+      -v, [--verbose], [--no-verbose]  # display stdout on git commands, callstack on errors
 
     Push a feature branch to the testing branch
+
