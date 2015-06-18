@@ -46,10 +46,11 @@ module Ding
     end
 
     desc "key-gen", "Create a new private/public key pair and associated ssh config"
-    option :host,       type: 'string', aliases: '-h', default: 'bitbucket.org', desc: 'specify repository host for ssh config'
-    option :name,       type: 'string', aliases: '-n', default: nil,             desc: 'name for key, defaults to host name'
-    option :passphrase, type: 'string', aliases: '-p', default: '',              desc: 'optional passphrase for key'
-    option :type,       type: 'string', aliases: '-t', default: 'rsa',           desc: 'type of key to create per -t option on ssh-keygen'
+    option :host,       type: 'string',  aliases: '-h', default: 'bitbucket.org', desc: 'specify repository host for ssh config'
+    option :name,       type: 'string',  aliases: '-n', default: nil,             desc: 'name for key, defaults to host name'
+    option :passphrase, type: 'string',  aliases: '-p', default: '',              desc: 'optional passphrase for key'
+    option :secure,     type: 'boolean', aliases: '-s', default: true,            desc: 'secure hosts do not need strict host key checking'
+    option :type,       type: 'string',  aliases: '-t', default: 'rsa',           desc: 'type of key to create per -t option on ssh-keygen'
     def key_gen
       key_name = options[:name] || "#{options[:host]}_#{options[:type]}"
       say "\nDing ding ding: let's create and configure a new ssh key #{key_name}...\n\n", :green

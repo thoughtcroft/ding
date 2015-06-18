@@ -32,6 +32,7 @@ module Ding
       File.open(ssh_config_file, 'a') do |f|
         f.puts "Host #{host}"
         f.puts "  IdentityFile #{ssh_private_key_file name}"
+        f.puts "  StrictHostKeyChecking no" if options[:secure_host]
       end
     end
 

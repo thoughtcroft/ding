@@ -74,6 +74,7 @@ it can be pasted into the users account on bitbucket.org.
                                        # Default: bitbucket.org
       -n, [--name=NAME]                # name for key, defaults to host name
       -p, [--passphrase=PASSPHRASE]    # optional passphrase for key
+      -s, [--secure], [--no-secure]    # secure hosts do not need strict host key checking
       -t, [--type=TYPE]                # type of key to create per -t option on ssh-keygen
                                        # Default: rsa
 
