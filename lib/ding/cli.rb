@@ -3,7 +3,7 @@ require 'thor'
 
 module Ding
   class Cli < Thor
-    class_option :force,   type: 'boolean', aliases: '-f', default: false, desc: 'use the force on commands that allow it e.g. git push'
+    class_option :force,   type: 'boolean', aliases: '-f', default: true,  desc: 'use the force on commands that allow it e.g. git push'
     class_option :verbose, type: 'boolean', aliases: '-v', default: false, desc: 'show verbose output such as full callstack on errors'
 
     default_task :test
