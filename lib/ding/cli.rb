@@ -94,7 +94,7 @@ module Ding
     rescue => e
       show_error e
     else
-      say "\n  --> You can now Command-V to paste that key: ding ding ding!\n\n", :green
+      say "\n  --> You can now Command-v to paste that key: ding ding ding!\n\n", :green
     end
 
     private
