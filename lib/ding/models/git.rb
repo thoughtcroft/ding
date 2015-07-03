@@ -7,7 +7,8 @@ module Ding
     end
 
     def branches(pattern)
-      %x(git branch --remote --list #{remote_version(pattern)}).split.map {|b| b.split('/').last}
+      merged = options[:merged] ? '--merged' : '--no-merged'
+      %x(git branch --remote --list #{remote_version(pattern)} #{merged}).split.map {|b| b.split('/').last}
     end
 
     def branch_exists?(branch)
