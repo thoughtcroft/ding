@@ -15,12 +15,13 @@ The usual method works:
 
 By default, `ding` will create a branch called `testing` from the
 selected feature branch. It also assumes that the master branch is
-called `master`. Branches named `master` and `develop` cannot be deleted
-by calling `Ding::Git.delete_branch` in code.
+called `master` and the main development branch is called `develop`.
+These main branches cannot be deleted using `Ding::Git.delete_branch`.
 
 These defaults can be over-ridden by providing ENV vars to the shell:
 
     DING_MASTER_BRANCH       - main branch to switch to for synchronising
+    DING_DEVELOP_BRANCH      - used to compare merge against feature
     DING_TESTING_BRANCH      - branch to over-ride from feature branch
     DING_SACROSANCT_BRANCHES - space separated list of protected branches
 
@@ -51,6 +52,7 @@ selection of the code to be pushed to `testing`.
       ding test
 
     Options:
+      -m, [--merged], [--no-merged]    # display branches that have been merged
       -p, [--pattern=PATTERN]          # specify a pattern for listing branches
                                        # Default: origin/XAP*
 

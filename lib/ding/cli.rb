@@ -12,12 +12,12 @@ module Ding
     option :merged, type:  'boolean',  aliases: '-m', default: false,         desc: 'display branches that have been merged'
     option :pattern, type: 'string',   aliases: '-p', default: 'origin/XAP*', desc: 'specify a pattern for listing branches'
     def test
-      master_branch, testing_branch = Ding::MASTER_BRANCH.dup, Ding::TESTING_BRANCH.dup
+      develop_branch, testing_branch = Ding::DEVELOP_BRANCH.dup, Ding::TESTING_BRANCH.dup
       say "\nDing ding ding: let's push a feature branch to #{testing_branch}...\n\n", :green
 
       repo = Ding::Git.new(options).tap do |r|
         say "> Synchronising with the remote...", :green
-        r.checkout master_branch
+        r.checkout develop_branch
         r.update
       end
 
