@@ -57,7 +57,7 @@ module Ding
           say "> Pushing #{testing_branch} to the remote...", :green
           r.push(testing_branch)
         else
-          say "\n --> There were merge errors, ding dang it!\n\n", :red
+          say "\n  --> There were merge errors, ding dang it!\n\n", :red
           exit 1
         end
       end
