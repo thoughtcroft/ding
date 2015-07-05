@@ -44,7 +44,9 @@ There are several commands available with global options for verbosity and forci
 This is the default action so running `ding` is the equivalent of `ding test`.
 
 There is an option to specify the feature branch pattern to display for
-selection of the code to be pushed to `testing`.
+selection of the code to be pushed to `testing`. By default, only
+remote branches that haven't already been merged to `develop` will be
+listed, this can be over-ridden by using the `-m` flag.
 
     $ ding help test
 

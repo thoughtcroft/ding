@@ -8,7 +8,7 @@ module Ding
 
     def branches(pattern)
       merged = options[:merged] ? '--merged' : '--no-merged'
-      %x(git branch --remote --list #{remote_version(pattern)} #{merged}).split.map {|b| b.split('/').last}
+      %x(git branch --remote --list #{remote_version(pattern)} #{merged}).split
     end
 
     def branch_exists?(branch)
@@ -23,6 +23,10 @@ module Ding
       raise "Unable to create #{branch}" unless run_cmd "git branch --track #{branch}"
     end
 
+    def current_branch
+      %x(git rev-parse --abbrev-ref HEAD)
+    end
+
     def delete_branch(branch)
       local_branch  = local_version(branch)
       remote_branch = remote_version(branch)
@@ -35,6 +39,15 @@ module Ding
         branch_cmd = "git push #{remote_name} :#{local_branch} #{options[:force] ? '-f' : ''}"
         raise "Unable to delete #{remote_branch}" unless run_cmd branch_cmd
       end
+    end
+
+    def merge_branch(branch)
+      raise "Can't merge into protected branch #{current_branch}" if Ding::SACROSANCT_BRANCHES.include?(current_branch)
+      success = !!(run_cmd "git merge -m 'Merge branch #{branch} into #{current_branch}' #{branch}")
+      unless success
+        run_cmd 'git merge --abort'
+      end
+      success
     end
 
     def push(branch)

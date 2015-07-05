@@ -8,12 +8,12 @@ module Ding
 
     default_task :test
 
-    desc "test", "Push a feature branch to the testing branch (this is the default action)"
-    option :merged, type:  'boolean',  aliases: '-m', default: false,         desc: 'display branches that have been merged'
+    desc "test", "Push a feature branch(es) to the testing branch (this is the default action)"
+    option :merged,  type: 'boolean',  aliases: '-m', default: false,         desc: 'display branches that have been merged'
     option :pattern, type: 'string',   aliases: '-p', default: 'origin/XAP*', desc: 'specify a pattern for listing branches'
     def test
       develop_branch, testing_branch = Ding::DEVELOP_BRANCH.dup, Ding::TESTING_BRANCH.dup
-      say "\nDing ding ding: let's push a feature branch to #{testing_branch}...\n\n", :green
+      say "\nDing ding ding: let's merge one or more feature branches to #{testing_branch}...\n\n", :green
 
       repo = Ding::Git.new(options).tap do |r|
         say "> Synchronising with the remote...", :green
@@ -27,17 +27,39 @@ module Ding
         exit 1
       end
 
-      feature_branch = ask_which_item(branches, 'Which feature branch should I use?')
+      feature_branches = ask_which_item(branches, 'Which feature branch should I use?', :multiple)
 
       repo.tap do |r|
         say "\n> Deleting #{testing_branch}...", :green
         r.delete_branch(testing_branch)
-        say "> Checking out #{feature_branch}...", :green
-        r.checkout(feature_branch)
+
+        say "> Checking out #{develop_branch}...", :green
+        r.checkout(develop_branch)
+
         say "> Creating #{testing_branch}...", :green
         r.create_branch(testing_branch)
-        say "> Pushing #{testing_branch} to the remote...", :green
-        r.push(testing_branch)
+
+        say "> Checking out #{testing_branch}...", :green
+        r.checkout(testing_branch)
+
+        say "> Merging in selected feature #{feature_branches.count == 1 ? 'branch' : 'branches'}...", :green
+        merge_errors = false
+        feature_branches.each do |branch|
+          if r.merge_branch(branch)
+            say ">>> #{branch} succeeded", :green
+          else
+            say ">>> #{branch} failed", :red
+            merge_errors = true
+          end
+        end
+
+        unless merge_errors
+          say "> Pushing #{testing_branch} to the remote...", :green
+          r.push(testing_branch)
+        else
+          say "\n --> There were merge errors, ding dang it!\n\n", :red
+          exit 1
+        end
       end
 
     rescue => e
@@ -101,14 +123,15 @@ module Ding
     private
 
     def show_error(e)
-      say "\n  --> Error: #{e.message}\n\n", :red
+      say "\n  --> ERROR: #{e.message}\n\n", :red
       raise if options[:verbose]
       exit 1
     end
 
-    def ask_which_item(items, prompt)
+    def ask_which_item(items, prompt, mode=:single)
       return items.first if items.size == 1
       str_format = "\n %#{items.count.to_s.size}s: %s"
+      prompt     = prompt << "\n > Enter multiple selections separated by ',' or 'A' for all" if mode == :multiple
       question   = set_color prompt, :yellow
       answers    = {}
 
@@ -119,10 +142,20 @@ module Ding
       end
 
       say question
-      reply = ask("> ").to_s
-      if answers[reply]
-        answers[reply]
-      else
+      reply = ask(" >", :yellow).to_s
+      begin
+        replies = reply.split(',')
+        if answers[reply]
+          answers[reply]
+        elsif mode == :multiple && reply == 'A'
+          answers
+        elsif mode == :multiple && !replies.empty?
+          selected_items = answers.values_at(*replies)
+          raise "Invalid selection" if selected_items.include?(nil)
+          selected_items
+        end
+      rescue
+        raise if options[:verbose]
         say "\n  --> That's not a valid selection, I'm out of here!\n\n", :red
         exit 1
       end
