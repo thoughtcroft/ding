@@ -128,8 +128,10 @@ module Ding
       exit 1
     end
 
+    # presents a list of choices and allows either a single or multiple selection
+    # returns the selected choices in an array or exist if selection is invalid
     def ask_which_item(items, prompt, mode=:single)
-      return items.first if items.size == 1
+      return Array(items.first) if items.size == 1
       str_format = "\n %#{items.count.to_s.size}s: %s"
       prompt     = prompt << "\n > Enter multiple selections separated by ',' or 'A' for all" if mode == :multiple
       question   = set_color prompt, :yellow
@@ -146,9 +148,9 @@ module Ding
       begin
         replies = reply.split(',')
         if answers[reply]
-          answers[reply]
+          answers.values_at(reply)
         elsif mode == :multiple && reply == 'A'
-          answers
+          answers.values
         elsif mode == :multiple && !replies.empty?
           selected_items = answers.values_at(*replies)
           raise "Invalid selection" if selected_items.include?(nil)

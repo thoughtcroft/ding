@@ -20,7 +20,7 @@ module Ding
     end
 
     def create_branch(branch)
-      raise "Unable to create #{branch}" unless run_cmd "git branch --track #{branch}"
+      raise "Unable to create #{branch}" unless run_cmd "git branch --no-track #{branch}"
     end
 
     def current_branch
