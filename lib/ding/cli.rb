@@ -46,9 +46,9 @@ module Ding
         merge_errors = false
         feature_branches.each do |branch|
           if r.merge_branch(branch)
-            say ">>> #{branch} succeeded", :green
+            say "   ✓  #{branch}", :green
           else
-            say ">>> #{branch} failed", :red
+            say "   ✗  #{branch}", :red
             merge_errors = true
           end
         end
