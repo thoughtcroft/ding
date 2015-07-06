@@ -13,10 +13,10 @@ module Ding
     option :pattern, type: 'string',   aliases: '-p', default: 'origin/XAP*', desc: 'specify a pattern for listing branches'
     def test
       develop_branch, testing_branch = Ding::DEVELOP_BRANCH.dup, Ding::TESTING_BRANCH.dup
-      say "\nDing ding ding: let's merge one or more feature branches to #{testing_branch}...\n\n", :green
+      say "\nDing ding ding: let's merge one or more feature branches to #{testing_branch}:\n\n", :green
 
       repo = Ding::Git.new(options).tap do |r|
-        say "> Synchronising with the remote...", :green
+        say "> Synchronising with the remote", :green
         r.checkout develop_branch
         r.update
       end
@@ -30,16 +30,16 @@ module Ding
       feature_branches = ask_which_item(branches, 'Which feature branch should I use?', :multiple)
 
       repo.tap do |r|
-        say "\n> Deleting #{testing_branch}...", :green
+        say "\n> Deleting #{testing_branch}", :green
         r.delete_branch(testing_branch)
 
-        say "> Checking out #{develop_branch}...", :green
+        say "> Checking out #{develop_branch}", :green
         r.checkout(develop_branch)
 
-        say "> Creating #{testing_branch}...", :green
+        say "> Creating #{testing_branch}", :green
         r.create_branch(testing_branch)
 
-        say "> Checking out #{testing_branch}...", :green
+        say "> Checking out #{testing_branch}", :green
         r.checkout(testing_branch)
 
         say "> Merging in selected feature #{feature_branches.count == 1 ? 'branch' : 'branches'}...", :green
@@ -54,7 +54,7 @@ module Ding
         end
 
         unless merge_errors
-          say "> Pushing #{testing_branch} to the remote...", :green
+          say "> Pushing #{testing_branch} to the remote", :green
           r.push(testing_branch)
         else
           say "\n  --> There were merge errors, ding dang it!\n\n", :red
@@ -68,6 +68,11 @@ module Ding
       say "\n  --> I'm finished: ding ding ding!\n\n", :green
     end
 
+    desc "version", "Display current version of 'ding'"
+    def version
+      say "ding #{Ding::VERSION}\n"
+    end
+
     desc "key-gen", "Create a new private/public key pair and associated ssh config"
     option :host,       type: 'string',  aliases: '-h', default: 'bitbucket.org', desc: 'specify repository host for ssh config'
     option :name,       type: 'string',  aliases: '-n', default: nil,             desc: 'name for key, defaults to host name'
@@ -76,25 +81,25 @@ module Ding
     option :type,       type: 'string',  aliases: '-t', default: 'rsa',           desc: 'type of key to create per -t option on ssh-keygen'
     def key_gen
       key_name = options[:name] || "#{options[:host]}_#{options[:type]}"
-      say "\nDing ding ding: let's create and configure a new ssh key #{key_name}...\n\n", :green
+      say "\nDing ding ding: let's create and configure a new ssh key #{key_name}:\n\n", :green
 
       Ding::Ssh.new(options).tap do |s|
         if s.ssh_key_exists?(key_name)
           if yes?("Do you want me to replace the existing key?", :yellow)
-            say "> Removing existing key #{key_name}...", :cyan
+            say "> Removing existing key #{key_name}", :cyan
             s.delete_ssh_key key_name
-            say "> Creating the replacement ssh key pair...", :cyan
+            say "> Creating the replacement ssh key pair", :cyan
             s.create_ssh_key key_name, ENV['USER']
           else
-            say "> Using existing key #{key_name}...", :cyan
+            say "> Using existing key #{key_name}", :cyan
           end
         else
-          say "> Creating the new ssh key pair...", :green
+          say "> Creating the new ssh key pair", :green
           s.create_ssh_key key_name, ENV['USER']
         end
-        say "> Adding the private key to the ssh config...", :green
+        say "> Adding the private key to the ssh config", :green
         s.update_config options[:host], key_name
-        say "> Copying the public key to the clipboard...", :green
+        say "> Copying the public key to the clipboard", :green
         copy_file_to_clipboard s.ssh_public_key_file(key_name)
       end
 
@@ -106,11 +111,11 @@ module Ding
 
     desc "key-show", "Copy a public ssh key signature to the system clipboard (use -v to also display the signature)"
     def key_show
-      say "\nDing ding ding: let's copy a public key to the clipboard...\n\n", :green
+      say "\nDing ding ding: let's copy a public key to the clipboard:\n\n", :green
 
       Ding::Ssh.new(options).tap do |s|
         key_name = ask_which_item(s.list_ssh_keys, 'Which key do you want to copy?')
-        say "\n> Copying the public key to the clipboard...", :green
+        say "\n> Copying the public key to the clipboard", :green
         copy_file_to_clipboard s.ssh_public_key_file(key_name)
       end
 
@@ -168,7 +173,7 @@ module Ding
       if options[:verbose]
         cmd << 'tee >(pbcopy)'
       else
-        cmd << ' pbcopy'
+        cmd << 'pbcopy'
       end
       bash cmd
     end
