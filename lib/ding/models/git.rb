@@ -19,8 +19,9 @@ module Ding
       raise "Unable to checkout #{branch}" unless run_cmd "git checkout #{branch}"
     end
 
-    def create_branch(branch)
+    def create_branch(branch, checkout=true)
       raise "Unable to create #{branch}" unless run_cmd "git branch --no-track #{branch}"
+      checkout(branch) if checkout
     end
 
     def current_branch

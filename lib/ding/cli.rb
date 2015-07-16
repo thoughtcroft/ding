@@ -16,8 +16,12 @@ module Ding
       say "\nDing ding ding: let's merge one or more feature branches to #{testing_branch}:\n\n", :green
 
       repo = Ding::Git.new(options).tap do |r|
-        say "> Synchronising with the remote", :green
         r.checkout develop_branch
+
+        say "> Deleting #{testing_branch}", :green
+        r.delete_branch(testing_branch)
+
+        say "> Synchronising with the remote", :green
         r.update
       end
 
@@ -27,20 +31,14 @@ module Ding
         exit 1
       end
 
-      feature_branches = ask_which_item(branches, 'Which feature branch should I use?', :multiple)
+      feature_branches = ask_which_item(branches, "\nWhich feature branch should I use?", :multiple)
 
       repo.tap do |r|
-        say "\n> Deleting #{testing_branch}", :green
+        say "\n> Deleting any synched #{testing_branch}", :green
         r.delete_branch(testing_branch)
-
-        say "> Checking out #{develop_branch}", :green
-        r.checkout(develop_branch)
 
         say "> Creating #{testing_branch}", :green
         r.create_branch(testing_branch)
-
-        say "> Checking out #{testing_branch}", :green
-        r.checkout(testing_branch)
 
         say "> Merging in selected feature #{feature_branches.count == 1 ? 'branch' : 'branches'}...", :green
         merge_errors = false
@@ -66,6 +64,7 @@ module Ding
       show_error e
     else
       say "\n  --> I'm finished: ding ding ding!\n\n", :green
+      exit 0
     end
 
     desc "version", "Display current version of 'ding'"
@@ -88,6 +87,7 @@ module Ding
           if yes?("Do you want me to replace the existing key?", :yellow)
             say "> Removing existing key #{key_name}", :cyan
             s.delete_ssh_key key_name
+
             say "> Creating the replacement ssh key pair", :cyan
             s.create_ssh_key key_name, ENV['USER']
           else
@@ -99,6 +99,7 @@ module Ding
         end
         say "> Adding the private key to the ssh config", :green
         s.update_config options[:host], key_name
+
         say "> Copying the public key to the clipboard", :green
         copy_file_to_clipboard s.ssh_public_key_file(key_name)
       end
@@ -107,6 +108,7 @@ module Ding
       show_error e
     else
       say "\n  --> I'm finished: ding ding ding!\n\n", :green
+      exit 0
     end
 
     desc "key-show", "Copy a public ssh key signature to the system clipboard (use -v to also display the signature)"
@@ -114,7 +116,7 @@ module Ding
       say "\nDing ding ding: let's copy a public key to the clipboard:\n\n", :green
 
       Ding::Ssh.new(options).tap do |s|
-        key_name = ask_which_item(s.list_ssh_keys, 'Which key do you want to copy?')
+        key_name = ask_which_item(s.list_ssh_keys, "\nWhich key do you want to copy?")
         say "\n> Copying the public key to the clipboard", :green
         copy_file_to_clipboard s.ssh_public_key_file(key_name)
       end
@@ -123,6 +125,7 @@ module Ding
       show_error e
     else
       say "\n  --> You can now Command-v to paste that key: ding ding ding!\n\n", :green
+      exit 0
     end
 
     private
@@ -138,7 +141,7 @@ module Ding
     def ask_which_item(items, prompt, mode=:single)
       return Array(items.first) if items.size == 1
       str_format = "\n %#{items.count.to_s.size}s: %s"
-      prompt     = prompt << "\n > Enter multiple selections separated by ',' or 'A' for all" if mode == :multiple
+      prompt     = prompt << "\n > Enter a single selection, multiple selections separated by ',', 'A' for all, 'Q' or nothing to quit" if mode == :multiple
       question   = set_color prompt, :yellow
       answers    = {}
 
@@ -150,21 +153,21 @@ module Ding
 
       say question
       reply = ask(" >", :yellow).to_s
-      begin
-        replies = reply.split(',')
-        if answers[reply]
-          answers.values_at(reply)
-        elsif mode == :multiple && reply == 'A'
-          answers.values
-        elsif mode == :multiple && !replies.empty?
-          selected_items = answers.values_at(*replies)
-          raise "Invalid selection" if selected_items.include?(nil)
-          selected_items
+      replies = reply.split(',')
+      if reply.empty? || reply.upcase == 'Q'
+        say "\n --> OK, nothing for me to do here but ding ding ding!\n\n", :green
+        exit 0
+      elsif answers[reply]
+        answers.values_at(reply)
+      elsif mode == :multiple && reply.upcase == 'A'
+        answers.values
+      elsif mode == :multiple && !replies.empty?
+        selected_items = answers.values_at(*replies)
+        if selected_items.include?(nil)
+          say "\n  --> That's not a valid selection, I'm out of here!\n\n", :red
+          exit 1
         end
-      rescue
-        raise if options[:verbose]
-        say "\n  --> That's not a valid selection, I'm out of here!\n\n", :red
-        exit 1
+        selected_items
       end
     end
 
