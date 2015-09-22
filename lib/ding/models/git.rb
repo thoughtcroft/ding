@@ -5,8 +5,8 @@ module Ding
     attr_reader :options
 
     def initialize(options={})
-      raise "#{repo} is NOT a git repository" unless git_repo?
       @options = options
+      raise "#{repo} is NOT a git repository" unless git_repo?
     end
 
     def branches(pattern)
