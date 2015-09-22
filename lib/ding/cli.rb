@@ -116,7 +116,7 @@ module Ding
       say "\nDing ding ding: let's copy a public key to the clipboard:\n\n", :green
 
       Ding::Ssh.new(options).tap do |s|
-        key_name = ask_which_item(s.list_ssh_keys, "\nWhich key do you want to copy?")
+        key_name = ask_which_item(s.list_ssh_keys, "Which key do you want to copy?")
         say "\n> Copying the public key to the clipboard", :green
         copy_file_to_clipboard s.ssh_public_key_file(key_name)
       end
@@ -141,7 +141,9 @@ module Ding
     def ask_which_item(items, prompt, mode=:single)
       return Array(items.first) if items.size == 1
       str_format = "\n %#{items.count.to_s.size}s: %s"
-      prompt     = prompt << "\n > Enter a single selection, multiple selections separated by ',', 'A' for all, 'Q' or nothing to quit" if mode == :multiple
+      prompt << "\n > Enter a single selection, "
+      prompt << "multiple selections separated by ',', 'A' for all, " if mode == :multiple
+      prompt << "'Q' or nothing to quit"
       question   = set_color prompt, :yellow
       answers    = {}
 
@@ -159,6 +161,9 @@ module Ding
         exit 0
       elsif answers[reply]
         answers.values_at(reply)
+      elsif mode == :single
+          say "\n  --> That's not a valid selection, I'm out of here!\n\n", :red
+          exit 1
       elsif mode == :multiple && reply.upcase == 'A'
         answers.values
       elsif mode == :multiple && !replies.empty?
@@ -172,12 +177,8 @@ module Ding
     end
 
     def copy_file_to_clipboard(file)
-      cmd = "cat #{file} | "
-      if options[:verbose]
-        cmd << 'tee >(pbcopy)'
-      else
-        cmd << 'pbcopy'
-      end
+      cmd = "cat #{file}"
+      cmd << (options[:verbose] ? '|tee >(pbcopy)' : '|pbcopy')
       bash cmd
     end
 

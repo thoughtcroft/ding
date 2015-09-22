@@ -1,5 +1,8 @@
 module Ding
   class Git
+    include Ding::Helpers
+
+    attr_reader :options
 
     def initialize(options={})
       raise "#{repo} is NOT a git repository" unless git_repo?
@@ -98,17 +101,6 @@ module Ding
 
     def remote_prefix
       "#{remote_name}/"
-    end
-
-    # NOTE: only for commands where we are interested in the effect
-    # as unless verbose is turned on, stdout and stderr are suppressed
-    def run_cmd(cmd)
-      cmd << ' &>/dev/null ' unless options[:verbose]
-      system cmd
-    end
-
-    def options
-      @options || {}
     end
   end
 end

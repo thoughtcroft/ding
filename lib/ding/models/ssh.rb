@@ -2,6 +2,9 @@ require 'fileutils'
 
 module Ding
   class Ssh
+    include Ding::Helpers
+
+    attr_reader :options
 
     def initialize(options={})
       @options = options
@@ -17,7 +20,8 @@ module Ding
     end
 
     def delete_ssh_key(name)
-      File.delete ssh_public_key_file(name), ssh_private_key_file(name) if ssh_key_exists? name
+      raise "ssh key #{name} does not exist!" if ssh_key_exists? name
+      File.delete ssh_public_key_file(name), ssh_private_key_file(name)
     end
 
     def update_config(host, name)
@@ -60,17 +64,6 @@ module Ding
 
     def ssh_config_file
       @ssh_config_file || options[:ssh_config_file] || File.join(ssh_config_path, 'config')
-    end
-
-    # NOTE: only for commands where we are interested in the effect
-    # as unless verbose is turned on, stdout and stderr are suppressed
-    def run_cmd(cmd)
-      cmd << ' &>/dev/null ' unless options[:verbose]
-      system cmd
-    end
-
-    def options
-      @options || {}
     end
   end
 end
