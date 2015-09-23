@@ -3,8 +3,7 @@ module Ding
     # NOTE: only for commands where we are interested in the effect
     # as unless verbose is turned on, stdout and stderr are suppressed
     def run_cmd(cmd)
-      options ||= {}
-      cmd << ' &>/dev/null ' unless options[:verbose]
+      cmd << ' &>/dev/null ' unless self.options[:verbose]
       system cmd
     end
   end
