@@ -6,13 +6,15 @@ module Ding
     class_option :force,   type: 'boolean', aliases: '-f', default: true,  desc: 'use the force on commands that allow it e.g. git push'
     class_option :verbose, type: 'boolean', aliases: '-v', default: false, desc: 'show verbose output such as full callstack on errors'
 
-    default_task :test
+    default_task :push
 
-    desc "test", "Push a feature branch(es) to the testing branch (this is the default action)"
+    desc "push", "Push feature branch(es) to the testing branch (this is the default action)"
+    option :branch,  type: 'string',   aliases: '-b', default: nil,           desc: 'specify an over-ride destination branch'
     option :merged,  type: 'boolean',  aliases: '-m', default: false,         desc: 'display branches that have been merged'
     option :pattern, type: 'string',   aliases: '-p', default: 'origin/XAP*', desc: 'specify a pattern for listing branches'
-    def test
+    def push
       develop_branch, testing_branch = Ding::DEVELOP_BRANCH.dup, Ding::TESTING_BRANCH.dup
+      testing_branch = options[:branch] if options[:branch]
       say "\nDing ding ding: let's merge one or more feature branches to #{testing_branch}:\n\n", :green
 
       repo = Ding::Git.new(options).tap do |r|

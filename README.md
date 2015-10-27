@@ -22,8 +22,10 @@ These defaults can be over-ridden by providing ENV vars to the shell:
 
     DING_MASTER_BRANCH       - main branch to switch to for synchronising
     DING_DEVELOP_BRANCH      - used to compare merge against feature
-    DING_TESTING_BRANCH      - branch to over-ride from feature branch
+    DING_TESTING_BRANCH      - branch to over-ride 'testing' branch
     DING_SACROSANCT_BRANCHES - space separated list of protected branches
+
+The testing branch can also be over-ridden by passing the `-b` option.
 
 ## Using Ding
 
@@ -33,32 +35,39 @@ There are several commands available with global options for verbosity and forci
       ding help [COMMAND]  # Describe available commands or one specific command
       ding key-gen         # Create a new private/public key pair and associated ssh config
       ding key-show        # Copy a public ssh key signature to the system clipboard (use -v to also display the signature)
-      ding test            # Push a feature branch to the testing branch (this is the default action)
+      ding push            # Push a feature branch to the testing branch (this is the default action)
 
     Options:
       -f, [--force], [--no-force]      # use the force on commands that allow it e.g. git push
       -v, [--verbose], [--no-verbose]  # show verbose output such as full callstack on errors
 
-### ding test
+### ding push
 
-This is the default action so running `ding` is the equivalent of `ding test`.
+This is the default action so running `ding` is the equivalent of `ding push`.
 
 There is an option to specify the feature branch pattern to display for
 selection of the code to be pushed to `testing`. By default, only
 remote branches that haven't already been merged to `develop` will be
 listed, this can be over-ridden by using the `-m` flag.
 
-    $ ding help test
+    $ ding help push
 
     Usage:
-      ding test
+      ding push
 
     Options:
+      -b  [--branch=BRANCH]            # specify an over-ride destination branch
       -m, [--merged], [--no-merged]    # display branches that have been merged
       -p, [--pattern=PATTERN]          # specify a pattern for listing branches
                                        # Default: origin/XAP*
 
-    Push a feature branch to the testing branch
+    Push feature branch(es) to the testing branch (this is the default action)
+
+The destination branch is selected in the following order:
+
+1. The branch specified by the `-b` option
+1. The branch specified in `ENV['DING_TESTING_BRANCH']`
+1. Otherwise defaults to the `testing` branch
 
 ### ding key-gen
 
