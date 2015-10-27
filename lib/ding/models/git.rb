@@ -96,7 +96,7 @@ module Ding
     end
 
     def remote_name
-      @remote_name || %x(git remote).chomp
+      @remote_name ||= %x(git remote).chomp
     end
 
     def remote_prefix

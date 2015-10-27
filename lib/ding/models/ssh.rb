@@ -20,7 +20,7 @@ module Ding
     end
 
     def delete_ssh_key(name)
-      raise "ssh key #{name} does not exist!" if ssh_key_exists? name
+      raise "ssh key #{name} does not exist!" unless ssh_key_exists? name
       File.delete ssh_public_key_file(name), ssh_private_key_file(name)
     end
 
@@ -59,11 +59,11 @@ module Ding
     end
 
     def ssh_config_path
-      @ssh_config_path || options[:ssh_config_path] || File.join(ENV['HOME'], '.ssh')
+      @ssh_config_path ||= options[:ssh_config_path] || File.join(ENV['HOME'], '.ssh')
     end
 
     def ssh_config_file
-      @ssh_config_file || options[:ssh_config_file] || File.join(ssh_config_path, 'config')
+      @ssh_config_file ||= options[:ssh_config_file] || File.join(ssh_config_path, 'config')
     end
   end
 end

@@ -139,7 +139,7 @@ module Ding
     end
 
     # presents a list of choices and allows either a single or multiple selection
-    # returns the selected choices in an array or exist if selection is invalid
+    # returns the selected choices in an array or exits if selection is invalid
     def ask_which_item(items, prompt, mode=:single)
       return Array(items.first) if items.size == 1
       str_format = "\n %#{items.count.to_s.size}s: %s"
