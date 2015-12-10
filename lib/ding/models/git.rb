@@ -65,6 +65,16 @@ module Ding
       raise "Error synchronising with the remote" unless run_cmd "git up"
     end
 
+    def reset_local_state
+      run_cmd 'git rebase --abort'
+      run_cmd 'git merge --abort'
+      run_cmd 'git reset --hard'
+    end
+
+    def is_dirty?
+      ! %x(git status -s).empty?
+    end
+
     private
 
     def git_repo?

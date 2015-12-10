@@ -18,6 +18,11 @@ module Ding
       say "\nDing ding ding: let's merge one or more feature branches to #{testing_branch}:\n\n", :green
 
       repo = Ding::Git.new(options).tap do |r|
+        if r.is_dirty?
+          say "> Local repo is dirty, resetting state", :yellow
+          r.reset_local_state
+        end
+
         r.checkout develop_branch
 
         say "> Deleting #{testing_branch}", :green
