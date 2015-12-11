@@ -56,10 +56,14 @@ listed, this can be over-ridden by using the `-m` flag.
       ding push
 
     Options:
-      -b  [--branch=BRANCH]            # specify an over-ride destination branch
+      -b, [--branch=BRANCH]            # specify an over-ride destination branch
+      -l, [--local], [--no-local]      # operate on local branches (merged from remote)
       -m, [--merged], [--no-merged]    # display branches that have been merged
       -p, [--pattern=PATTERN]          # specify a pattern for listing branches
-                                       # Default: origin/XAP*
+                                       # Default: *XAP*
+      -f, [--force]                    # use the force on commands that allow it e.g. git push
+                                       # Default: true
+      -v, [--verbose], [--no-verbose]  # show verbose output such as full callstack on errors
 
     Push feature branch(es) to the testing branch (this is the default action)
 

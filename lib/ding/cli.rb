@@ -9,12 +9,13 @@ module Ding
     default_task :push
 
     desc "push", "Push feature branch(es) to the testing branch (this is the default action)"
-    option :branch,  type: 'string',   aliases: '-b', default: nil,           desc: 'specify an over-ride destination branch'
-    option :merged,  type: 'boolean',  aliases: '-m', default: false,         desc: 'display branches that have been merged'
-    option :pattern, type: 'string',   aliases: '-p', default: 'origin/XAP*', desc: 'specify a pattern for listing branches'
+    option :branch,  type: 'string',  aliases: '-b', default: nil,           desc: 'specify an over-ride destination branch'
+    option :local,   type: 'boolean', aliases: '-l', default: false,         desc: 'operate on local branches (merged from remote)'
+    option :merged,  type: 'boolean', aliases: '-m', default: false,         desc: 'only display branches that have been merged'
+    option :pattern, type: 'string',  aliases: '-p', default: '*XAP*',       desc: 'specify a pattern for listing branches'
     def push
-      develop_branch, testing_branch = Ding::DEVELOP_BRANCH.dup, Ding::TESTING_BRANCH.dup
-      testing_branch = options[:branch] if options[:branch]
+      testing_branch = options[:branch] || Ding::TESTING_BRANCH.dup
+
       say "\nDing ding ding: let's merge one or more feature branches to #{testing_branch}:\n\n", :green
 
       repo = Ding::Git.new(options).tap do |r|
@@ -23,13 +24,14 @@ module Ding
           r.reset_local_state
         end
 
+        develop_branch = r.branch_in_context(Ding::DEVELOP_BRANCH.dup)
         r.checkout develop_branch
 
         say "> Deleting #{testing_branch}", :green
         r.delete_branch(testing_branch)
 
-        say "> Synchronising with the remote", :green
-        r.update
+        say "> Fetching branches from the remote", :green
+        r.fetch_branches
       end
 
       branches = repo.branches(options[:pattern])

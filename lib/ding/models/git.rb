@@ -11,7 +11,8 @@ module Ding
 
     def branches(pattern)
       merged = options[:merged] ? '--merged' : '--no-merged'
-      %x(git branch --remote --list #{remote_version(pattern)} #{merged}).split
+      remote = options[:local] ? '' : '--remote'
+      %x(git branch #{remote} --list #{remote_version(pattern)} #{merged}).split
     end
 
     def branch_exists?(branch)
@@ -59,6 +60,18 @@ module Ding
       push_cmd = "git push #{remote_name} #{branch}"
       push_cmd << " --force" if options[:force]
       raise "Unable to push #{branch} branch!" unless run_cmd push_cmd
+    end
+
+    def branch_in_context(branch)
+      if options[:local]
+        local_version(branch)
+      else
+        remote_version(branch)
+      end
+    end
+
+    def fetch_branches
+      raise "Error synchronising with the remote" unless run_cmd 'git fetch --all'
     end
 
     def update
