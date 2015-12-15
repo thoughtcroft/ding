@@ -9,9 +9,17 @@ module Ding
       raise "#{repo} is NOT a git repository" unless git_repo?
     end
 
-    def branches(pattern)
+    def local_branches(pattern)
+      branches pattern, false
+    end
+
+    def remote_branches(pattern)
+      branches pattern, true
+    end
+
+    def branches(pattern, remote=true)
       merged = options[:merged] ? '--merged' : '--no-merged'
-      remote = options[:local] ? '' : '--remote'
+      remote = '--remote' if remote
       %x(git branch #{remote} --list #{remote_version(pattern)} #{merged}).split
     end
 

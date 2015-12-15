@@ -34,7 +34,7 @@ module Ding
         r.update
       end
 
-      branches = repo.branches(options[:pattern])
+      branches = repo.remote_branches(options[:pattern])
       if branches.empty?
         say "\n --> No feature branches available to test, I'm out of here!\n\n", :red
         exit 1
