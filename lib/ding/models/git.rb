@@ -70,12 +70,9 @@ module Ding
       end
     end
 
-    def fetch_branches
-      raise "Error synchronising with the remote" unless run_cmd 'git fetch --all'
-    end
-
     def update
-      raise "Error synchronising with the remote" unless run_cmd "git up"
+      command = options[:local] ? 'git up' : 'git fetch --all'
+      raise "Error synchronising with the remote" unless run_cmd command
     end
 
     def reset_local_state

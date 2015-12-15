@@ -30,8 +30,8 @@ module Ding
         say "> Deleting #{testing_branch}", :green
         r.delete_branch(testing_branch)
 
-        say "> Fetching branches from the remote", :green
-        r.fetch_branches
+        say "> Synchronising with the remote", :green
+        r.update
       end
 
       branches = repo.branches(options[:pattern])
