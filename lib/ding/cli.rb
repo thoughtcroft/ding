@@ -8,11 +8,6 @@ module Ding
 
     default_task :push
 
-    desc "version", "Display current version"
-    def version
-      say "\nMy ding a ling is version: #{Ding::VERSION}", :blue
-    end
-
     desc "push", "Push feature branch(es) to the testing branch (this is the default action)"
     option :branch,  type: 'string',  aliases: '-b', default: nil,           desc: 'specify an over-ride destination branch'
     option :local,   type: 'boolean', aliases: '-l', default: false,         desc: 'operate on local branches (merged from remote)'
@@ -83,7 +78,7 @@ module Ding
 
     desc "version", "Display current version of 'ding'"
     def version
-      say "ding #{Ding::VERSION}\n"
+      say "ding version #{Ding::VERSION}\n"
     end
 
     desc "key-gen", "Create a new private/public key pair and associated ssh config"
