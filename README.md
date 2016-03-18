@@ -36,6 +36,7 @@ There are several commands available with global options for verbosity and forci
       ding key-gen         # Create a new private/public key pair and associated ssh config
       ding key-show        # Copy a public ssh key signature to the system clipboard (use -v to also display the signature)
       ding push            # Push a feature branch to the testing branch (this is the default action)
+      ding version         # Display current gem version
 
     Options:
       -f, [--force], [--no-force]      # use the force on commands that allow it e.g. git push

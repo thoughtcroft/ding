@@ -8,6 +8,11 @@ module Ding
 
     default_task :push
 
+    desc "version", "Display current version"
+    def version
+      say "\nMy ding a ling is version: #{Ding::VERSION}", :blue
+    end
+
     desc "push", "Push feature branch(es) to the testing branch (this is the default action)"
     option :branch,  type: 'string',  aliases: '-b', default: nil,           desc: 'specify an over-ride destination branch'
     option :local,   type: 'boolean', aliases: '-l', default: false,         desc: 'operate on local branches (merged from remote)'
