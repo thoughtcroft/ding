@@ -39,8 +39,9 @@ module Ding
         say "\n --> No feature branches available to test, I'm out of here!\n\n", :red
         exit 1
       end
-
       feature_branches = ask_which_item(branches, "\nWhich feature branch should I use?", :multiple)
+
+      commit_parents = repo.commit_parents(testing_branch)
 
       repo.tap do |r|
         say "\n> Deleting any synched #{testing_branch}", :green
@@ -66,6 +67,11 @@ module Ding
         else
           say "\n  --> There were merge errors, ding dang it!\n\n", :red
           exit 1
+        end
+
+        if repo.commit_parents(testing_branch).sort == commit_parents.sort
+          result = options[:verbose] ? ": #{commit_parents}" : ''
+          say "\n  --> That did not alter the testing branch commit parents#{result}!\n", :yellow
         end
       end
 
@@ -164,7 +170,7 @@ module Ding
 
       say question
       reply = ask(" >", :yellow).to_s
-      replies = reply.split(',')
+      replies = reply.split(',').map(&:strip)
       if reply.empty? || reply.upcase == 'Q'
         say "\n --> OK, nothing for me to do here but ding ding ding!\n\n", :green
         exit 0

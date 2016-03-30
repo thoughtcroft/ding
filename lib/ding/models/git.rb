@@ -40,6 +40,10 @@ module Ding
       %x(git rev-parse --abbrev-ref HEAD)
     end
 
+    def commit_parents(branch)
+      %x(git rev-list --parents -n 1 #{remote_version(branch)}).split.drop(1)
+    end
+
     def delete_branch(branch)
       local_branch  = local_version(branch)
       remote_branch = remote_version(branch)
