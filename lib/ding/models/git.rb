@@ -69,6 +69,7 @@ module Ding
     end
 
     def push(branch)
+      raise "Can't push to protected branch #{branch}" if Ding::SACROSANCT_BRANCHES.include?(branch)
       checkout branch
       push_cmd = "git push #{remote_name} #{branch}"
       push_cmd << " --force" if options[:force]
