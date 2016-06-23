@@ -8,24 +8,34 @@ module Ding
 
     default_task :push
 
-    desc "push", "Push feature branch(es) to the testing branch (this is the default action)"
-    option :branch,  type: 'string',  aliases: '-b', default: nil,           desc: 'specify an over-ride destination branch'
-    option :local,   type: 'boolean', aliases: '-l', default: false,         desc: 'operate on local branches (merged from remote)'
-    option :merged,  type: 'boolean', aliases: '-m', default: false,         desc: 'only display branches that have been merged'
-    option :pattern, type: 'string',  aliases: '-p', default: '*XAP*',       desc: 'specify a pattern for listing branches'
+    desc "push", <<-EOS
+      Creates the testing branch from develop, merges selected feature branch(es) and pushes to the remote (this is the
+      default action). The name of the testing branch is 'testing' unless the -b option is supplied. The 'development' branch
+      name can be over-ridden using ENV vars - see the source documentation for details of ENV var support. For all
+      boolean options, the default is 'false' unless otherwise stated above.
+
+      EOS
+    option :branch,  type: 'string',  aliases: '-b', default: nil,     desc: 'specify an over-ride for the testing branch'
+    option :local,   type: 'boolean', aliases: '-l', default: false,   desc: 'operate on local branches (merged from remote)'
+    option :merged,  type: 'boolean', aliases: '-m', default: false,   desc: 'only display branches that have been merged'
+    option :pattern, type: 'string',  aliases: '-p', default: '*XAP*', desc: 'specify a pattern for listing feature branches'
+    option :skip,    type: 'string',  aliases: '-s', default: false,   desc: 'skip feature branch selection; just push develop to testing'
     def push
       testing_branch = options[:branch] || Ding::TESTING_BRANCH.dup
+      develop_branch = Ding::DEVELOP_BRANCH.dup
 
-      say "\nDing ding ding: let's merge one or more feature branches to #{testing_branch}:\n\n", :green
+      if options[:skip]
+        say "\nDing ding ding: let's push the development branch to #{testing_branch}:\n\n", :green
+      else
+        say "\nDing ding ding: let's merge one or more feature branches to #{testing_branch}:\n\n", :green
+      end
 
       repo = Ding::Git.new(options).tap do |r|
         if r.is_dirty?
           say "> Local repo is dirty, resetting state", :yellow
           r.reset_local_state
         end
-
-        develop_branch = r.branch_in_context(Ding::DEVELOP_BRANCH.dup)
-        r.checkout develop_branch
+        r.checkout r.branch_in_context(develop_branch)
 
         say "> Deleting #{testing_branch}", :green
         r.delete_branch(testing_branch)
@@ -34,30 +44,35 @@ module Ding
         r.update
       end
 
-      branches = repo.remote_branches(options[:pattern])
-      if branches.empty?
-        say "\n --> No feature branches available to test, I'm out of here!\n\n", :red
-        exit 1
+      unless options[:skip]
+        branches = repo.remote_branches(options[:pattern])
+        if branches.empty?
+          say "\n --> No feature branches available to test, I'm out of here!\n\n", :red
+          exit 1
+        end
+        feature_branches = ask_which_item(branches, "\nWhich feature branch should I use?", :multiple)
+        say "\n"
       end
-      feature_branches = ask_which_item(branches, "\nWhich feature branch should I use?", :multiple)
 
-      commit_parents = repo.commit_parents(testing_branch)
+      original_commit_parents = repo.commit_parents(testing_branch)
 
       repo.tap do |r|
-        say "\n> Deleting any synched #{testing_branch}", :green
+        say "> Deleting any synched #{testing_branch}", :green
         r.delete_branch(testing_branch)
 
-        say "> Creating #{testing_branch}", :green
+        say "> Creating #{testing_branch} from #{develop_branch}", :green
         r.create_branch(testing_branch)
 
-        say "> Merging in selected feature #{feature_branches.count == 1 ? 'branch' : 'branches'}...", :green
-        merge_errors = false
-        feature_branches.each do |branch|
-          if r.merge_branch(branch)
-            say "   ✓  #{branch}", :green
-          else
-            say "   ✗  #{branch}", :red
-            merge_errors = true
+        unless options[:skip]
+          say "> Merging in selected feature #{feature_branches.count == 1 ? 'branch' : 'branches'}...", :green
+          merge_errors = false
+          feature_branches.each do |branch|
+            if r.merge_branch(branch)
+              say "   ✓  #{branch}", :green
+            else
+              say "   ✗  #{branch}", :red
+              merge_errors = true
+            end
           end
         end
 
@@ -69,8 +84,10 @@ module Ding
           exit 1
         end
 
-        if repo.commit_parents(testing_branch).sort == commit_parents.sort
-          result = options[:verbose] ? ": #{commit_parents}" : ''
+        if original_commit_parents &&
+            (remote_commit_parents = repo.commit_parents(testing_branch)) &&
+            remote_commit_parents.sort == original_commit_parents.sort
+          result = options[:verbose] ? ": #{original_commit_parents}" : ''
           say "\n  --> That did not alter the testing branch commit parents#{result}!\n", :yellow
         end
       end
@@ -154,7 +171,6 @@ module Ding
     # presents a list of choices and allows either a single or multiple selection
     # returns the selected choices in an array or exits if selection is invalid
     def ask_which_item(items, prompt, mode=:single)
-      return Array(items.first) if items.size == 1
       str_format = "\n %#{items.count.to_s.size}s: %s"
       prompt << "\n > Enter a single selection, "
       prompt << "multiple selections separated by ',', 'A' for all, " if mode == :multiple
@@ -177,8 +193,8 @@ module Ding
       elsif answers[reply]
         answers.values_at(reply)
       elsif mode == :single
-          say "\n  --> That's not a valid selection, I'm out of here!\n\n", :red
-          exit 1
+        say "\n  --> That's not a valid selection, I'm out of here!\n\n", :red
+        exit 1
       elsif mode == :multiple && reply.upcase == 'A'
         answers.values
       elsif mode == :multiple && !replies.empty?

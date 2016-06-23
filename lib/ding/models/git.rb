@@ -41,7 +41,8 @@ module Ding
     end
 
     def commit_parents(branch)
-      %x(git rev-list --parents -n 1 #{remote_version(branch)}).split.drop(1)
+      remote_branch = remote_version(branch)
+      %x(git rev-list --parents -n 1 #{remote_branch}).split.drop(1) if branch_exists?(remote_branch)
     end
 
     def delete_branch(branch)
