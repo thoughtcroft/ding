@@ -11,9 +11,17 @@ Since we are installing from a private repository, we can't use the
 usual `gem install ding` method. But don't worry, we have rake tasks for
 that!
 
+    cd <my_stuff>
     git clone git@bitbucket.org:arisapp/ding.git
     cd ding
     rake
+
+## Updates
+
+There is a rake task for that too!
+
+    cd <my_stuff>/ding
+    rake update
 
 ## Configuration
 
