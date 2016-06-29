@@ -7,9 +7,13 @@ repo to a testing branch for driving CI deployment for QA.
 
 ## Installation
 
-The usual method works:
+Since we are installing from a private repository, we can't use the
+usual `gem install ding` method. But don't worry, we have rake tasks for
+that!
 
-    gem install ding
+    git clone git@bitbucket.org:arisapp/ding.git
+    cd ding
+    rake
 
 ## Configuration
 
@@ -105,3 +109,16 @@ If the public key is needed again for pasting into the bitbucket.org config it c
 captured on the clipboard by running this command and selecting the appropriate key from
 the list presented.
 
+## Contributing
+
+If you need to make a change to ding then follow these steps:
+
+..1. Clone this repository (if you are not a current user)
+..1. Base your commits on the master branch
+..1. Update to the next version in `lib\ding\version.rb` using [SemVer](http://semver.org/)
+..1. Use the rake tasks - see `rake -T` - to install the new version
+..1. When you are ready to release, use the `rake release` task to tag and push
+
+Good luck!
+
+(PS if you get stuck, reach out to warren@thoughtcroft.com)
