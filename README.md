@@ -113,11 +113,11 @@ the list presented.
 
 If you need to make a change to ding then follow these steps:
 
-..1. Clone this repository (if you are not a current user)
-..1. Base your commits on the master branch
-..1. Update to the next version in `lib\ding\version.rb` using [SemVer](http://semver.org/)
-..1. Use the rake tasks - see `rake -T` - to install the new version
-..1. When you are ready to release, use the `rake release` task to tag and push
+  1. Clone this repository (if you are not a current user)
+  1. Base your commits on the master branch
+  1. Update to the next version in `lib\ding\version.rb` using [SemVer](http://semver.org/)
+  1. Use the rake tasks - see `rake -T` - to install the new version
+  1. When you are ready to release, use the `rake release` task to tag and push
 
 Good luck!
 
