@@ -14,6 +14,10 @@ def version
   gemspec.version
 end
 
+def name
+  gemspec.name
+end
+
 def gemspec
   Bundler.load_gemspec(gemspec_path)
 end
@@ -38,7 +42,7 @@ task :default => :install
 delete_task :release        # don't publish to ruby gems
 delete_task "install:local" # simplify install options
 
-desc "Create new tag v#{version} and push to source control"
+desc "Create new tag v#{version} and push #{name} to source control"
 task "release" => ["release:guard_clean", "release:source_control_push"]
 
 desc "Update the gem from the remote and install new version"
@@ -46,4 +50,5 @@ task "update" => ["release:guard_clean", "source_control_pull","install"]
 
 task "source_control_pull" do
   git_pull_source
+  Bundler.ui.confirm "#{name} version v#{version} pulled down from source"
 end
