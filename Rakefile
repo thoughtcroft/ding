@@ -50,5 +50,5 @@ task "update" => ["release:guard_clean", "source_control_pull","install"]
 
 task "source_control_pull" do
   git_pull_source
-  Bundler.ui.confirm "#{name} version v#{version} pulled down from source"
+  Bundler.ui.confirm "#{name} #{version} pulled down from source"
 end
