@@ -16,12 +16,19 @@ that!
     cd ding
     rake
 
+You will of course require access to the Zunos Bitbucket account but
+then that's what you want ding for anyway, right? So, sorted.
+
 ## Updates
 
-There is a rake task for that too!
+From time to time, the software may change and you will want to update
+ding. Well, there is a rake task for that too!
 
     cd <my_stuff>/ding
     rake update
+
+Note that if you have uncommitted changes (you are a dev I hope) then
+the update will halt and warn you of it.
 
 ## Configuration
 
