@@ -7,17 +7,16 @@ repo to a testing branch for driving CI deployment for QA.
 
 ## Installation
 
-Since we are installing from a private repository, we can't use the
-usual `gem install ding` method. But don't worry, we have rake tasks for
-that!
+Since we are installing from a repository, we can't use the usual `gem
+install ding` method. But don't worry, we have rake tasks for that!
+
+If you are going to contribute, clone this guy and use your own copy
+otherwise you can set <gituser> to be 'thoughtcroft'
 
     cd <my_stuff>
-    git clone git@bitbucket.org:arisapp/ding.git
+    git clone https://github.com/<gituser>/ding.git
     cd ding
     rake
-
-You will of course require access to the Zunos Bitbucket account but
-then that's what you want ding for anyway, right? So, sorted.
 
 ## Updates
 
@@ -96,10 +95,10 @@ The destination branch is selected in the following order:
 
 ### ding key-gen
 
-This will generate a new ssh key pair and configure them into the ssh config
-for the relevant host. This allows `ding test` to push code to bitbucket.org,
-for example, so that you aren't prompted for a userid and password each
-time.
+This will generate a new ssh key pair and configure them into the ssh
+config for the relevant host. This allows `ding test` to push code to
+github.com or bitbucket.org so that you aren't prompted for a userid and
+password each time.
 
 On completion, the public key is copied to the system clipboard so that
 it can be pasted into the users account on bitbucket.org.
@@ -120,8 +119,9 @@ it can be pasted into the users account on bitbucket.org.
 
 ### ding key-show
 
-If the public key is needed again for pasting into the bitbucket.org config it can be
-captured on the clipboard by running this command and selecting the appropriate key from
+If the public key is needed again for pasting into the github.com or
+bitbucket.org config it can be captured on the clipboard by running this
+command and selecting the appropriate key from
 the list presented.
 
 ## Contributing
